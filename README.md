@@ -34,3 +34,12 @@ Support desk. Decision records: whoever signed them.
 ---
 
 Exported 2026-10-04 from the `support` repo, `apps/kb/` → `src/`.
+
+## Build
+
+```
+npm ci
+npm run build   # static site in build/, e.g. build/kb/incidents/4471/problems/index.html
+```
+
+`build/` is committed so the pages can be read as the desk sees them without building.

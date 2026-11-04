@@ -1,0 +1,62 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: ŁW
+status: open
+reviewed: 2026-11-04
+signature: ŁW
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/theluke-dot-dev/s01e03-what-it-shows/issues';
+  const tickets = { parser: `${repo}/1`, hint: `${repo}/2`, 'one-day': `${repo}/3` };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Read the reports instead of
+the subject lines and the ticket holds three problems. Each one now has a ticket of its own.
+
+<ProblemTable ticket={4471} {tickets} />
+
+<Callout kind="warn">
+The queued parser fix closes only <code>parser</code>. The other two keep coming in after it ships.
+</Callout>
+
+## The three problems
+
+**`parser`: the shared parser reads dates month first.** Every tenant in #4471 writes the day
+first, so a booking for 7 April goes out for 4 July. It reaches them through the app, by email,
+and through booking-v2's form.
+
+**`hint`: booking-v3 prints `MM/DD/YYYY` under its date field.** People at day-first tenants on
+booking-v3 type what the hint tells them, month first, and the form reads it day first. Same
+swap, different bug: only the form, only booking-v3. The parser fix does not touch it; the hint
+or the form's reading has to change.
+
+**`one-day`: the date moves by one day.** "Tuesday 12 May" shows as "Monday 11 May"; a client in
+Lisbon gets Tuesday and one in Toronto gets Monday. Nothing is swapped. That points to a time
+zone (a date stored as midnight in one zone, shown in another), not to the parser. The desk had
+listed these in `desk-notes.json` and footnoted them under `parser`; here they count apart.
+
+## How the reports were split
+
+- One id, one report: the export pages overlap, and the ids that come twice are dropped.
+- The tenant decides, not intake's tag. `meta.intakeTag` is a guess from the reporter's browser;
+  the cause comes from the tenant's locale and booking form (`causes.ts`). The two disagree, and
+  the *tagged as* column shows by how much.
+- A report the desk read as a one-day move is `one-day`, whatever its tenant.
+- Checked against the bodies: every body that names two dates has them day and month swapped
+  (`parser`, `hint`) or one day apart (`one-day`). The few that name no dates stay with their
+  tenant's cause.
+
+## Lessons
+
+- A subject line says what the reporter saw, not what broke. Merging on it put three bugs in one
+  ticket ([decision 0001](/kb/decisions/0001-dedupe-by-subject)).
+- Count by the tenant, not by intake's tag.
+- A footnote under a cause is a problem without a ticket.
+
+<RenderStamp {signature} />

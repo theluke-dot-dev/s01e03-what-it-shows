@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="../../../../_app/immutable/entry/start.BO_RnbrZ.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/dkgbl6Me.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/CQFXCmae.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/DzfzsUbq.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/entry/app.D94BA3iU.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/B4gOfvMX.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/B3nrjOkk.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/CaojPxAP.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/BCs92F4W.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/nodes/0.C3mfb7ds.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/Ba8fEgwE.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/nodes/5.B1M3q-6N.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/DU8ohL7b.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/B5zzrPu9.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/BtI8RDBz.js" rel="modulepreload">
+		<link href="../../../../_app/immutable/chunks/iXLSwIXB.js" rel="modulepreload">
+		<!--e2jw2j--><!----><title>#4471 · three problems, not one · support kb</title>
+		<link href="../../../../_app/immutable/assets/runbook.BhhgOc_n.css" rel="stylesheet">
+		<link href="../../../../_app/immutable/assets/Callout.yLErXQDM.css" rel="stylesheet">
+		<link href="../../../../_app/immutable/assets/5.C4zghVAa.css" rel="stylesheet">
+  </head>
+  <body data-sveltekit-preload-data="hover">
+    <div style="display: contents"><!--[--><!--[0--><!--[--><!--[--><div class="kb svelte-e2jw2j"><header><a class="crumb svelte-e2jw2j" href="/kb">support desk · kb</a> <h1 class="svelte-e2jw2j">#4471 · three problems, not one</h1> <p class="meta svelte-e2jw2j"><span>owner <b>ŁW</b></span> <span class="status open svelte-e2jw2j">open</span> <span class="svelte-e2jw2j">reviewed 2026-11-04 · 0 days ago</span></p></header> <!--[-1--><!--]--> <main><p><a href="/kb/incidents/4471">#4471</a> is marked known: one issue, one fix queued. Read the reports instead of
+the subject lines and the ticket holds three problems. Each one now has a ticket of its own.</p> <p class="sum svelte-1op6c6"><strong>412</strong> reports in #4471 (427 rows in the export, 15 exported twice) · <strong>3</strong> problems</p> <table><thead><tr><th>problem</th><th>reports</th><th>channels</th><th>tagged as</th><th>tenants</th><th>seen</th><th>ticket</th></tr></thead><tbody><!--[--><tr><td><code>parser</code></td><td><strong>374</strong></td><td class="small svelte-1op6c6">app ×202 · email ×147 · form ×25</td><td class="small svelte-1op6c6">parser ×351 · hint ×23</td><td>11</td><td class="small svelte-1op6c6">2026-04-01 → 2026-10-04</td><td><!--[0--><a href="https://github.com/theluke-dot-dev/s01e03-what-it-shows/issues/1">#1</a><!--]--></td></tr><tr><td><code>hint</code></td><td><strong>33</strong></td><td class="small svelte-1op6c6">form ×33</td><td class="small svelte-1op6c6">hint ×18 · parser ×15</td><td>3</td><td class="small svelte-1op6c6">2026-04-17 → 2026-09-22</td><td><!--[0--><a href="https://github.com/theluke-dot-dev/s01e03-what-it-shows/issues/2">#2</a><!--]--></td></tr><tr><td><code>one-day</code></td><td><strong>5</strong></td><td class="small svelte-1op6c6">email ×3 · app ×2</td><td class="small svelte-1op6c6">parser ×5</td><td>5</td><td class="small svelte-1op6c6">2026-04-02 → 2026-10-04</td><td><!--[0--><a href="https://github.com/theluke-dot-dev/s01e03-what-it-shows/issues/3">#3</a><!--]--></td></tr><!--]--></tbody></table><!----> <aside class="warn svelte-17bri61"><!---->The queued parser fix closes only <code>parser</code>. The other two keep coming in after it ships.<!----></aside><!----> <h2>The three problems</h2> <p><strong><code>parser</code>: the shared parser reads dates month first.</strong> Every tenant in #4471 writes the day
+first, so a booking for 7 April goes out for 4 July. It reaches them through the app, by email,
+and through booking-v2’s form.</p> <p><strong><code>hint</code>: booking-v3 prints <code>MM/DD/YYYY</code> under its date field.</strong> People at day-first tenants on
+booking-v3 type what the hint tells them, month first, and the form reads it day first. Same
+swap, different bug: only the form, only booking-v3. The parser fix does not touch it; the hint
+or the form’s reading has to change.</p> <p><strong><code>one-day</code>: the date moves by one day.</strong> “Tuesday 12 May” shows as “Monday 11 May”; a client in
+Lisbon gets Tuesday and one in Toronto gets Monday. Nothing is swapped. That points to a time
+zone (a date stored as midnight in one zone, shown in another), not to the parser. The desk had
+listed these in <code>desk-notes.json</code> and footnoted them under <code>parser</code>; here they count apart.</p> <h2>How the reports were split</h2> <ul><li>One id, one report: the export pages overlap, and the ids that come twice are dropped.</li> <li>The tenant decides, not intake’s tag. <code>meta.intakeTag</code> is a guess from the reporter’s browser;
+the cause comes from the tenant’s locale and booking form (<code>causes.ts</code>). The two disagree, and
+the <em>tagged as</em> column shows by how much.</li> <li>A report the desk read as a one-day move is <code>one-day</code>, whatever its tenant.</li> <li>Checked against the bodies: every body that names two dates has them day and month swapped
+(<code>parser</code>, <code>hint</code>) or one day apart (<code>one-day</code>). The few that name no dates stay with their
+tenant’s cause.</li></ul> <h2>Lessons</h2> <ul><li>A subject line says what the reporter saw, not what broke. Merging on it put three bugs in one
+ticket (<a href="/kb/decisions/0001-dedupe-by-subject">decision 0001</a>).</li> <li>Count by the tenant, not by intake’s tag.</li> <li>A footnote under a cause is a problem without a ticket.</li></ul> <!--[0--><p class="stamp svelte-1280m42">desk ref <b class="svelte-1280m42">DR-6XDC-T09D</b></p><!--]--><!----><!----></main> <footer class="svelte-e2jw2j">Pages are written by people. Tables and charts are built from data at render time.</footer></div><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_11nhkdw = {
+						base: new URL("../../../..", location).pathname.slice(0, -1)
+					};
+
+					const element = document.currentScript.parentElement;
+
+					Promise.all([
+						import("../../../../_app/immutable/entry/start.BO_RnbrZ.js"),
+						import("../../../../_app/immutable/entry/app.D94BA3iU.js")
+					]).then(([kit, app]) => {
+						kit.start(app, element, {
+							node_ids: [0, 5],
+							data: [null,null],
+							form: null,
+							error: null
+						});
+					});
+				}
+			</script>
+		</div>
+  </body>
+</html>
