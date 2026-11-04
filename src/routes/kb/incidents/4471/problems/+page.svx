@@ -14,15 +14,27 @@ signature: ŁW
 
   const repo = 'https://github.com/theluke-dot-dev/s01e03-what-it-shows/issues';
   const tickets = { parser: `${repo}/1`, hint: `${repo}/2`, 'one-day': `${repo}/3` };
+  const states = { parser: 'fixed · closed', hint: "won't fix · closed", 'one-day': 'no fix · open' };
 </script>
 
-[#4471](/kb/incidents/4471) is marked known: one issue, one fix queued. Read the reports instead of
+[#4471](/kb/incidents/4471) was marked known: one issue, one fix queued. Read the reports instead of
 the subject lines and the ticket holds three problems. Each one now has a ticket of its own.
 
-<ProblemTable ticket={4471} {tickets} />
+<ProblemTable ticket={4471} {tickets} {states} />
+
+## Since the export
+
+Engineering closed #4471 on 5 October with an answer for two of the three:
+
+- `parser`: **fixed** in `fix(dates): parse dd/mm for eu locales`. Its ticket is closed.
+- `hint`: **won't fix**. The booking-v3 form is retired, so the hint goes with it. Its ticket is
+  closed as not planned.
+- `one-day`: **no answer.** Engineering's update does not mention it, and neither fix touches it.
+  Its ticket stays open.
 
 <Callout kind="warn">
-The queued parser fix closes only <code>parser</code>. The other two keep coming in after it ships.
+#4471 is closed, but a date can still land one day off. Keep <code>one-day</code> reports out of
+#4471 and merge them into their own ticket.
 </Callout>
 
 ## The three problems
@@ -33,13 +45,12 @@ and through booking-v2's form.
 
 **`hint`: booking-v3 prints `MM/DD/YYYY` under its date field.** People at day-first tenants on
 booking-v3 type what the hint tells them, month first, and the form reads it day first. Same
-swap, different bug: only the form, only booking-v3. The parser fix does not touch it; the hint
-or the form's reading has to change.
+swap, different bug: only the form, only booking-v3. The parser fix does not touch it.
 
 **`one-day`: the date moves by one day.** "Tuesday 12 May" shows as "Monday 11 May"; a client in
 Lisbon gets Tuesday and one in Toronto gets Monday. Nothing is swapped. That points to a time
 zone (a date stored as midnight in one zone, shown in another), not to the parser. The desk had
-listed these in `desk-notes.json` and footnoted them under `parser`; here they count apart.
+listed these in `desk-notes.json` and footnoted them under `parser`, with no ticket; here they get one.
 
 ## How the reports were split
 
@@ -47,7 +58,8 @@ listed these in `desk-notes.json` and footnoted them under `parser`; here they c
 - The tenant decides, not intake's tag. `meta.intakeTag` is a guess from the reporter's browser;
   the cause comes from the tenant's locale and booking form (`causes.ts`). The two disagree, and
   the *tagged as* column shows by how much.
-- A report the desk read as a one-day move is `one-day`, whatever its tenant.
+- A report the desk read as a one-day move counts under `one-day`, and also under the cause
+  the desk files it under by tenant, the way the desk's own table counts it.
 - Checked against the bodies: every body that names two dates has them day and month swapped
   (`parser`, `hint`) or one day apart (`one-day`). The few that name no dates stay with their
   tenant's cause.

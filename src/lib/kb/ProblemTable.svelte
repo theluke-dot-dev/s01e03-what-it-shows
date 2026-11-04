@@ -5,13 +5,19 @@
   import { groupByProblem, type Problem } from '#lib/kb/problems';
   import { tenantOf } from '#lib/kb/locales';
 
-  // `tickets`: where each problem is filed, problem → ticket URL.
-  let { ticket, tickets = {} }: { ticket: number; tickets?: Partial<Record<Problem, string>> } = $props();
+  // `tickets`: where each problem is filed, problem → ticket URL. `states`: what became of it.
+  let {
+    ticket,
+    tickets = {},
+    states = {},
+  }: { ticket: number; tickets?: Partial<Record<Problem, string>>; states?: Partial<Record<Problem, string>> } = $props();
 
   const rows = reports as Report[];
   const exported = rows.filter((r) => r.mergedInto === ticket).length;
   const unique = uniqueById(rows).filter((r) => r.mergedInto === ticket).length;
   const groups = groupByProblem(rows, ticket, tenantOf, notes.oneDayMove);
+  const alsoOneDay = (g: { problem: Problem; reports: Report[] }) =>
+    g.problem === 'one-day' ? 0 : g.reports.filter((r) => notes.oneDayMove.includes(r.id)).length;
   const list = (n: Record<string, number>) =>
     Object.entries(n)
       .sort((a, b) => b[1] - a[1])
@@ -28,7 +34,7 @@
 
 <table>
   <thead>
-    <tr><th>problem</th><th>reports</th><th>channels</th><th>tagged as</th><th>tenants</th><th>seen</th><th>ticket</th></tr>
+    <tr><th>problem</th><th>reports</th><th>channels</th><th>tagged as</th><th>tenants</th><th>seen</th><th>ticket</th><th>state</th></tr>
   </thead>
   <tbody>
     {#each groups as g (g.problem)}
@@ -42,10 +48,19 @@
         <td>
           {#if tickets[g.problem]}<a href={tickets[g.problem]}>{ticketNo(tickets[g.problem] ?? '')}</a>{:else}<span class="none">none</span>{/if}
         </td>
+        <td class="small">{states[g.problem] ?? ''}</td>
       </tr>
     {/each}
   </tbody>
 </table>
+
+{#each groups as g (g.problem)}
+  {@const n = alsoOneDay(g)}
+  {#if n}
+    <p class="small">{n} of the <code>{g.problem}</code> reports are the one-day reports: the desk files them under
+      <code>{g.problem}</code> by tenant and counts them there, so they count under both.</p>
+  {/if}
+{/each}
 
 <style>
   .sum { font-size: 1.1rem; }
